@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://laratarkh.com/sitemap.xml
+Sitemap: https://ltarkh.github.io/Lara-s-website/sitemap.xml

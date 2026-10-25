@@ -1,77 +1,51 @@
-/* =========================================================
-   Lara Tarkh — site interactions
-   Theme toggle · mobile menu · navbar shadow · bibtex toggles
-   ========================================================= */
+/* Lara Tarkh — site interactions: theme toggle, nav, BibTeX */
 (function () {
   "use strict";
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme-toggle");
 
-  const root = document.documentElement;
-  const themeToggle = document.getElementById("theme-toggle");
-
-  /* ---------- Theme (persisted, respects OS preference) ---------- */
-  function applyTheme(theme) {
-    root.setAttribute("data-theme", theme);
-    if (themeToggle) {
-      const icon = themeToggle.querySelector("i");
-      if (icon) icon.className = theme === "dark" ? "fas fa-sun" : "fas fa-moon";
-      themeToggle.setAttribute(
-        "aria-label",
-        theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-      );
-    }
+  function setIcon() {
+    if (!toggle) return;
+    var dark = root.getAttribute("data-theme") === "dark";
+    toggle.innerHTML = dark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    toggle.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
   }
+  setIcon();
 
-  const stored = localStorage.getItem("theme");
-  const prefersLight =
-    window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
-  applyTheme(stored || (prefersLight ? "light" : "dark"));
-
-  if (themeToggle) {
-    themeToggle.addEventListener("click", function () {
-      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      applyTheme(next);
-      localStorage.setItem("theme", next);
+  if (toggle) {
+    toggle.addEventListener("click", function () {
+      var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) {}
+      setIcon();
     });
   }
 
-  /* ---------- Mobile menu ---------- */
-  const menuBtn = document.querySelector(".menu-btn");
-  const navLinks = document.querySelector(".nav-links");
-  if (menuBtn && navLinks) {
-    menuBtn.addEventListener("click", function () {
-      navLinks.classList.toggle("open");
-      const open = navLinks.classList.contains("open");
-      menuBtn.innerHTML = open
-        ? '<i class="fas fa-xmark"></i>'
-        : '<i class="fas fa-bars"></i>';
-    });
-    navLinks.querySelectorAll("a").forEach(function (link) {
-      link.addEventListener("click", function () {
-        navLinks.classList.remove("open");
-        menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-      });
-    });
+  /* On phones the tab row scrolls sideways: keep the current page's tab in view */
+  var current = document.querySelector('.nav-tabs a[aria-current="page"]');
+  if (current && current.scrollIntoView) {
+    current.scrollIntoView({ block: "nearest", inline: "center" });
+    window.scrollTo(0, 0);
   }
 
-  /* ---------- Navbar shadow on scroll ---------- */
-  const navbar = document.getElementById("navbar");
-  if (navbar) {
-    const onScroll = function () {
-      navbar.classList.toggle("scrolled", window.scrollY > 8);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-  }
-
-  /* ---------- BibTeX show/hide (publications page) ---------- */
-  document.querySelectorAll(".bibtex-btn").forEach(function (btn) {
+  /* BibTeX show / copy */
+  document.querySelectorAll("[data-bibtex]").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      const entry = btn.closest(".pub-entry");
-      const block = entry && entry.querySelector(".bibtex-block");
-      if (block) {
-        const open = block.classList.toggle("open");
-        btn.textContent = open ? "Hide BibTeX" : "BibTeX";
-      }
+      var block = document.getElementById(btn.getAttribute("data-bibtex"));
+      if (!block) return;
+      var open = block.classList.toggle("open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  });
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var block = document.getElementById(btn.getAttribute("data-copy"));
+      if (!block || !navigator.clipboard) return;
+      navigator.clipboard.writeText(block.textContent.trim()).then(function () {
+        var old = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+        setTimeout(function () { btn.innerHTML = old; }, 1500);
+      });
     });
   });
 })();

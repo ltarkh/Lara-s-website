@@ -1,43 +1,39 @@
 # Lara Tarkh — Academic Website
 
-A fast, static academic site. No build step, no framework — just HTML, CSS, and a small
-vanilla JS file. Deploy free on GitHub Pages, Netlify, or Cloudflare Pages.
+Static site, no build step. Each section is its own page, so nothing is one long scroll.
 
-## Structure
+| Page | File |
+|------|------|
+| Home (profile, short bio, interests, recent news) | `index.html` |
+| Bio (biography, education, experience, honours, skills) | `bio.html` |
+| Research (themes, projects) | `research.html` |
+| Publications (stats, numbered list, links, BibTeX) | `publications.html` |
+| Talks | `talks.html` |
+| Awards & funding | `awards.html` |
+| Teaching & mentoring | `teaching.html` |
+| News | `news.html` |
+| Not-found page (GitHub Pages / Netlify use it automatically) | `404.html` |
 
-| File | What it is |
-|------|-----------|
-| `index.html` | Home: hero, about, education, research focus, selected publications, skills, contact |
-| `publications.html` | Full publications list with a bibliometrics strip |
-| `style.css` | All styling. Plum/rose palette with dark + light themes (CSS variables at the top) |
-| `script.js` | Theme toggle (remembers your choice), mobile menu, navbar shadow, BibTeX toggles |
-| `profile.png` | Profile photo |
-| `sitemap.xml`, `robots.txt` | SEO |
+Logos are loaded from each institution's website icon (falls back to a monogram).
 
-The `Webiste-main 2/` folder is kept as the original source material and is not part of the
-published site.
+Shared: `style.css` (colors at the top, light + dark), `script.js` (theme toggle, BibTeX), `profile.jpg`.
 
-## Editing content
+## Before publishing
 
-Everything lives directly in the HTML — open `index.html` or `publications.html` and edit the
-text. Common edits:
+1. **CV** — add your CV as `cv.pdf` next to `index.html` (linked from Home and Bio).
+2. Delete the old `profile.png` from the repo; the site now uses `profile.jpg`.
 
-- **Email:** search for `your.email@example.com` (two places in `index.html`) and replace it.
-- **Add a publication:** copy an existing `<li class="pub-entry">` block in `publications.html`.
-- **Colors:** change the CSS variables under `[data-theme="dark"]` / `[data-theme="light"]` at
-  the top of `style.css`.
-- **Photo:** replace `profile.png`.
+## Common edits
+
+- **Add a paper:** in `publications.html`, copy one `<li>…</li>` inside `<ol class="pubs">`,
+  change the citation and the BibTeX, and give its `id="bib-N"` and the two `data-…="bib-N"`
+  buttons a new number. Update the counts in the stats boxes.
+- **Add news:** add a `<li><time>Mon YYYY</time><div>…</div></li>` at the top of the list in
+  `news.html`; copy it into the three-item list on `index.html` too.
+- **Nav:** the tab list is repeated at the top of each page — edit all pages if you add one.
 
 ## Run locally
 
 ```bash
-# from this folder
-python3 -m http.server 8000
-# then visit http://localhost:8000
+python3 -m http.server 8000   # then open http://localhost:8000
 ```
-
-## Deploy on GitHub Pages
-
-1. Push these files to a repo (e.g. `laratarkh.github.io`).
-2. In the repo, go to **Settings → Pages** and set the source to the `main` branch, root folder.
-3. Update the `laratarkh.com` URLs in the meta tags and `sitemap.xml` if you use a different domain.
